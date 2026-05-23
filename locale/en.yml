@@ -49,6 +49,25 @@ pianotell-flamoji:
       import_json_button: Import JSON
       export_json_button: Export JSON
       import_emojis_message: This will import emoji configurations only. You need to upload emoji images manually.
+      request_failed: Operation failed. Please try again.
+
+      category:
+        heading: Categories
+        drag_handle_hint: Drag to reorder
+        add_button: Add
+        edit_button: Edit
+        delete_button: Delete
+        delete_confirmation: "Delete category \"{title}\"? All emojis in this category will also be deleted."
+        request_failed: Category action failed. Please try again.
+        visibility_toggle_label: Show "{title}" in the picker
+
+      edit_category:
+        add_modal_title: Add Category
+        edit_modal_title: Edit Category
+        title_label: Category Title
+        path_or_url_label: Path or URL
+        submit_button: => core.ref.save_changes
+        saved_message: => core.admin.settings.saved_message
 
       edit_emoji:
         modal_title: Add Emoji
@@ -56,12 +75,22 @@ pianotell-flamoji:
         delete_emoji_confirmation: "Are you sure you want to delete this emoji?"
         text_to_replace_label: Text to Replace
         path_or_url_label: Path or URL
+        category_label: Category
         submit_button: => core.ref.save_changes
         delete_emoji_button: Delete emoji
         saved_message: => core.admin.settings.saved_message
 
       emoji_list:
-        load_more_button: => core.forum.post_stream.load_more_button
+        empty_text: No emojis in this category yet.
+        drag_handle_hint: Drag to reorder
+        select_all_button: Select all
+        clear_selection_button: Clear
+        delete_button: Delete
+        move_button: Move
+        delete_confirmation: "Delete the selected {count} emoji?"
+        move_modal_title: Move Selected Emojis
+        move_submit_button: Move
+        cache_clear_warning: Saved, but the formatter cache could not be cleared automatically. New emoji may take a moment to render in existing posts.
 
   # Translations in this namespace are used by the forum user interface.
   forum:

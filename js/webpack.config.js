@@ -58,7 +58,8 @@ const babelRule = config.module.rules.find(
   (r) => r.loader && r.loader.includes('babel-loader')
 );
 if (babelRule) {
-  babelRule.exclude = /node_modules\/(emoji-mart|@emoji-mart)\//;
+  // Match both POSIX and Windows paths.
+  babelRule.exclude = /node_modules[\\/](emoji-mart|@emoji-mart)[\\/]/;
 }
 
 module.exports = config;

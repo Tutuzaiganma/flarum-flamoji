@@ -1,5 +1,186 @@
+.CustomEmojiWorkspace {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+  align-items: start;
+
+  &-title {
+    min-width: 0;
+
+    h3 {
+      margin: 0 0 12px;
+      color: @muted-color;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &-categories,
+  &-list {
+    background: @body-bg;
+    border: 1px solid @control-bg;
+    border-radius: @border-radius;
+    padding: 12px;
+  }
+
+  &-categoryActions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+
+  &-categoryIO {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
+
+    .Button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  &-categoryDirectory {
+    border-top: 1px dashed @control-bg;
+    padding-top: 12px;
+    background: fade(@control-bg, 20%);
+    border-radius: @border-radius;
+    max-height: 560px;
+    overflow-y: auto;
+  }
+
+  &-categoryList {
+    margin: 0;
+    padding: 8px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &-categoryListItem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &.is-dragging {
+      opacity: 0.45;
+    }
+
+    &.is-dragging-ghost {
+      opacity: 0.2;
+    }
+  }
+
+  &-categoryItem {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: @text-color;
+    border-radius: @border-radius;
+    padding: 8px 10px;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      background: @control-bg;
+      outline: none;
+    }
+
+    &.is-active {
+      border-color: @primary-color;
+      background: fade(@primary-color, 12%);
+      color: @primary-color;
+      font-weight: 600;
+    }
+  }
+
+  &-categoryName {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &-categoryVisibilitySwitch {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  &-categoryDragHandle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    color: @muted-color;
+    opacity: 0.55;
+    cursor: grab;
+    touch-action: none;
+    transition: opacity 150ms ease-out, color 150ms ease-out;
+
+    &:hover {
+      opacity: 1;
+      color: @text-color;
+    }
+  }
+
+  &-categoryIcon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex: 0 0 auto;
+  }
+
+  &-listHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  &-listActions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &-listBulkActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (max-width: @screen-phone-max) {
+    grid-template-columns: 1fr;
+
+    &-categoryIO {
+      grid-template-columns: 1fr;
+    }
+
+    &-listActions {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}
+
 .customEmoji-list {
   position: relative;
+  max-height: 560px;
+  overflow-y: auto;
+  padding-right: 8px;
 
   ul {
     display: flex;
@@ -12,6 +193,24 @@
       min-width: 150px;
       min-height: 150px;
       margin: 10px;
+
+      &.is-selected .customEmoji {
+        border-color: @primary-color;
+        box-shadow: 0 0 0 2px fade(@primary-color, 28%);
+      }
+
+      &.is-sortable-selected .customEmoji {
+        border-color: @primary-color;
+        box-shadow: 0 0 0 2px fade(@primary-color, 28%);
+      }
+
+      &.is-dragging .customEmoji {
+        opacity: 0.45;
+      }
+
+      &.is-dragging-ghost .customEmoji {
+        opacity: 0.2;
+      }
     }
   }
 
@@ -27,6 +226,7 @@
 
   .customEmoji {
     border: 1px solid @control-bg;
+    box-sizing: border-box;
     outline: none;
     border-radius: @border-radius;
     overflow: hidden;
@@ -35,6 +235,19 @@
     text-align: center;
     width: 100%;
     height: 100%;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+
+    &:hover,
+    &:focus {
+      border-color: fade(@primary-color, 55%);
+    }
+
+    &.is-selected {
+      border-color: @primary-color;
+      box-shadow: 0 0 0 2px fade(@primary-color, 28%);
+    }
 
     &-title {
       background: @control-bg;
@@ -87,26 +300,41 @@
       }
     }
 
-    &.addEmoji {
-      border: 3px dashed @control-bg;
+    &-dragHandle {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      z-index: 1;
+      background-color: transparent;
+      opacity: 0.4;
+      cursor: grab;
+      touch-action: none;
+      transition: opacity 150ms ease-out, background-color 150ms ease-out;
 
-      &-addButton {
-        background-color: transparent;
-
-        opacity: 0.4;
-        transition: opacity 150ms ease-out, background-color 150ms ease-out;
-
-        &:hover,
-        &:focus {
-          opacity: 1;
-          background-color: @control-bg;
-        }
+      &:hover,
+      &:focus {
+        opacity: 1;
+        background-color: @control-bg;
       }
     }
+  }
 
-    &-loadMore {
-      text-align: center;
-      padding: 20px;
-    }
+  &.is-boxSelecting {
+    cursor: crosshair;
+  }
+
+  .customEmoji-selectionBox {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    border: 1px solid @primary-color;
+    background: fade(@primary-color, 12%);
+    border-radius: @border-radius;
+  }
+
+  .customEmoji-empty {
+    text-align: center;
+    color: @muted-color;
+    padding: 20px 0 6px;
   }
 }

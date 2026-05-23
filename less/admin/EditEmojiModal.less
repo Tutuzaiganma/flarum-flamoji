@@ -13,3 +13,51 @@
     float: right;
   }
 }
+
+.Flamoji-categorySelect {
+  display: block;
+  max-width: 100%;
+  position: relative;
+
+  .Select-input {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .Select-caret {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    margin-left: 0;
+    transform: translateY(-50%);
+  }
+}
+
+.EditEmojiTypeModal {
+  .Modal-header h3 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  &-titleImage,
+  &-titleIcon {
+    height: 1.2em;
+    width: 1.2em;
+    margin-right: 0.5em;
+    vertical-align: -0.2em;
+    object-fit: contain;
+  }
+
+  &-titleText {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

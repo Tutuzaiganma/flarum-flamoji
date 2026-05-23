@@ -10,6 +10,7 @@ namespace PianoTell\Flamoji\Commands;
 
 use Flarum\Foundation\ValidationException;
 use PianoTell\Flamoji\Models\Emoji;
+use PianoTell\Flamoji\Models\EmojiType;
 
 class ImportEmojiHandler
 {
@@ -31,14 +32,38 @@ class ImportEmojiHandler
             } catch (ValidationException $e) {
                 $errors = array_merge($errors, $e->getAttributes());
             }
+
+            if (isset($normalized[$i]) && ($normalized[$i]['type_id'] === null || ! EmojiType::query()->whereKey($normalized[$i]['type_id'])->exists())) {
+                $errors["data.$i.type_id"] = 'The selected category does not exist.';
+            }
         }
         if (! empty($errors)) {
             throw new ValidationException($errors);
         }
 
+        $sortCounters = [];
+
         foreach ($normalized as $row) {
-            $emoji = Emoji::build($row['title'], $row['text_to_replace'], $row['path']);
+            $typeId = $row['type_id'];
+            if (! array_key_exists($typeId, $sortCounters)) {
+                $sortCounters[$typeId] = $this->nextSortForType($typeId);
+            }
+
+            $sort = $row['sort'];
+            if ($sort === null) {
+                $sort = $sortCounters[$typeId];
+                $sortCounters[$typeId]++;
+            } else {
+                $sortCounters[$typeId] = max($sortCounters[$typeId], $sort + 1);
+            }
+
+            $emoji = Emoji::build($row['title'], $row['text_to_replace'], $row['path'], $typeId, $sort);
             $emoji->save();
         }
+    }
+
+    private function nextSortForType(int $typeId): int
+    {
+        return (int) Emoji::query()->where('type_id', $typeId)->max('sort') + 1;
     }
 }

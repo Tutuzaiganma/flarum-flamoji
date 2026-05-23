@@ -10,6 +10,7 @@ import Alert from 'flarum/common/components/Alert';
 import Button from 'flarum/common/components/Button';
 import Modal from 'flarum/common/components/Modal';
 import ItemList from 'flarum/common/utils/ItemList';
+import Select from 'flarum/common/components/Select';
 import Stream from 'flarum/common/utils/Stream';
 import urlChecker from '../../common/utils/urlChecker';
 
@@ -26,6 +27,7 @@ export default class EditEmojiModal extends Modal {
     this.emojiTitle = Stream(this.emoji.title() || '');
     this.textToReplace = Stream(this.emoji.textToReplace() || '');
     this.path = Stream(this.emoji.path() || '');
+    this.typeId = Stream(this.resolveInitialTypeId());
   }
 
   className() {
@@ -54,6 +56,7 @@ export default class EditEmojiModal extends Modal {
 
   fields() {
     const items = new ItemList();
+    const categoryOptions = this.categoryOptions();
 
     items.add(
       'title',
@@ -83,6 +86,21 @@ export default class EditEmojiModal extends Modal {
     );
 
     items.add(
+      'typeId',
+      <div className="Form-group">
+        <label>{app.translator.trans('pianotell-flamoji.admin.custom_emojis_section.edit_emoji.category_label')}</label>
+        <Select
+          value={this.typeId()}
+          options={categoryOptions}
+          title={categoryOptions[this.typeId()] || ''}
+          wrapperAttrs={{ className: 'Flamoji-categorySelect' }}
+          onchange={this.typeId}
+        />
+      </div>,
+      20
+    );
+
+    items.add(
       'submit',
       <div className="Form-group">
         {Button.component(
@@ -90,6 +108,7 @@ export default class EditEmojiModal extends Modal {
             type: 'submit',
             className: 'Button Button--primary EditEmojiModal-save',
             loading: this.loading,
+            disabled: !this.typeId(),
           },
           app.translator.trans('pianotell-flamoji.admin.custom_emojis_section.edit_emoji.submit_button')
         )}
@@ -109,6 +128,7 @@ export default class EditEmojiModal extends Modal {
 
   submitData() {
     return {
+      typeId: this.typeId(),
       title: this.emojiTitle(),
       textToReplace: this.textToReplace(),
       path: this.path(),
@@ -119,12 +139,12 @@ export default class EditEmojiModal extends Modal {
     e.preventDefault();
     this.loading = true;
 
-    const exists = this.emoji.exists;
-
     this.emoji
       .save(this.submitData())
-      .then((emoji) => {
-        if (!exists) app.customEmojiListState.addToList(emoji);
+      .then(() => {
+        return app.customEmojiListState.loadResults();
+      })
+      .then(() => {
         // Cache clearing is best-effort: the formatter cache is keyed
         // and will be regenerated on next request, so a failure here
         // (e.g. transient permission issue on storage/cache) shouldn't
@@ -152,8 +172,10 @@ export default class EditEmojiModal extends Modal {
     this.emoji
       .delete()
       .then(() => {
-        app.customEmojiListState.removeFromList(this.emoji.id());
-        return this.clearCache().catch((err) => this.showCacheClearWarning(err));
+        return app.customEmojiListState
+          .loadResults()
+          .then(() => this.clearCache())
+          .catch((err) => this.showCacheClearWarning(err));
       })
       .then(() => {
         this.hide();
@@ -188,5 +210,30 @@ export default class EditEmojiModal extends Modal {
       method: 'DELETE',
       url: app.forum.attribute('apiUrl') + '/cache',
     });
+  }
+
+  resolveInitialTypeId() {
+    const emojiTypeId = this.emoji.typeId();
+
+    if (emojiTypeId !== undefined && emojiTypeId !== null) {
+      return String(emojiTypeId);
+    }
+
+    const selectedTypeId = app.customEmojiListState?.selectedTypeId;
+    if (selectedTypeId) {
+      return selectedTypeId;
+    }
+
+    return app.customEmojiListState?.categories[0]?.id || '';
+  }
+
+  categoryOptions() {
+    const options = {};
+
+    app.customEmojiListState?.categories.forEach((category) => {
+      options[category.id] = category.title;
+    });
+
+    return options;
   }
 }

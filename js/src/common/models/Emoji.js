@@ -9,6 +9,8 @@ import Model from 'flarum/common/Model';
 import mixin from 'flarum/common/utils/mixin';
 
 export default class Emoji extends mixin(Model, {
+  typeId: Model.attribute('type_id'),
+  sort: Model.attribute('sort'),
   title: Model.attribute('title'),
   textToReplace: Model.attribute('text_to_replace'),
   path: Model.attribute('path'),

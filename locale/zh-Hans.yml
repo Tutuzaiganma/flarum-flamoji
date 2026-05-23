@@ -1,0 +1,134 @@
+pianotell-flamoji:
+  admin:
+    settings:
+      emoji_settings_heading: 表情设置
+      category_settings_heading: 分类设置
+      general_ui_settings_heading: 通用界面设置
+      show_variants_label: 显示肤色变体
+      show_variants_text: 部分表情支持肤色变体。当在选择器中选中带变体的表情时，会弹出变体面板供用户选择所需变体。
+      auto_hide_label: 自动隐藏
+      auto_hide_text: 选择表情后隐藏选择器。
+      show_preview_label: 显示预览区域
+      show_preview_text: 在选择器网格下方的预览面板中显示表情名称、短代码和肤色选择器。
+      show_category_buttons_label: 显示分类按钮
+      show_category_buttons_text: 在选择器顶部显示分类图标行。仅启用一两个分类时可考虑关闭。
+      show_search_label: 显示搜索输入框
+      show_search_text: 在选择器顶部显示搜索框。
+      show_recents_label: 显示（并保存）常用表情
+      show_recents_text: 在选择器顶部显示“常用”标签。每位用户的常用表情仅保存在其自己的浏览器中。
+      prepopulate_recents_label: 预填充热门表情
+      prepopulate_recents_text: 启用后，在用户尚未选择任何表情前，“常用”区域会先显示一组默认热门表情。禁用后，该区域初始为空，随着用户选择表情逐步填充。
+      frequent_rows_label: 常用表情行数
+      frequent_rows_text: 在选择器顶部显示最近/常用表情的行数（1-10）。
+      picker_set_label: 表情样式
+      picker_set_text: 选择器中表情的显示方式。“自动”会与 Flarum Emoji 扩展保持一致——启用时使用 Twemoji，否则使用系统原生字体——从而让选择器与帖子实际显示一致。
+      picker_set_auto: 自动
+      picker_set_twemoji: Twemoji
+      picker_set_native: 原生
+      specify_categories_label: 指定分类
+      specify_categories_text: 你可以在这里指定分类列表，选择器只会显示这些分类。
+
+      emoji_categories:
+        people: => pianotell-flamoji.ref.emoji_categories.people
+        nature: => pianotell-flamoji.ref.emoji_categories.nature
+        foods: => pianotell-flamoji.ref.emoji_categories.foods
+        activity: => pianotell-flamoji.ref.emoji_categories.activity
+        places: => pianotell-flamoji.ref.emoji_categories.places
+        objects: => pianotell-flamoji.ref.emoji_categories.objects
+        symbols: => pianotell-flamoji.ref.emoji_categories.symbols
+        flags: => pianotell-flamoji.ref.emoji_categories.flags
+
+    custom_emojis_section:
+      heading_title: 自定义表情
+      import_json_button: 导入 JSON
+      export_json_button: 导出 JSON
+      import_emojis_message: 这只会导入表情配置，你仍需手动上传表情图片。
+      request_failed: 操作失败，请重试。
+
+      category:
+        heading: 分类
+        drag_handle_hint: 拖拽排序
+        add_button: 新增
+        edit_button: 编辑
+        delete_button: 删除
+        delete_confirmation: "确定要删除分类“{title}”吗？该分类下所有表情也会被删除。"
+        request_failed: 分类操作失败，请重试。
+        visibility_toggle_label: 在选择器中显示“{title}”
+
+      edit_category:
+        add_modal_title: 新增分类
+        edit_modal_title: 编辑分类
+        title_label: 分类标题
+        path_or_url_label: 路径或 URL
+        submit_button: => core.ref.save_changes
+        saved_message: => core.admin.settings.saved_message
+
+      edit_emoji:
+        modal_title: 添加表情
+        emoji_title_label: 表情标题
+        delete_emoji_confirmation: "确定要删除这个表情吗？"
+        text_to_replace_label: 替换文本
+        path_or_url_label: 路径或 URL
+        category_label: 所属分类
+        submit_button: => core.ref.save_changes
+        delete_emoji_button: 删除表情
+        saved_message: => core.admin.settings.saved_message
+
+      emoji_list:
+        empty_text: 当前分类暂无表情
+        drag_handle_hint: 拖拽排序
+        select_all_button: 全选
+        clear_selection_button: 取消
+        delete_button: 删除
+        move_button: 移动
+        delete_confirmation: "确定要删除选中的 {count} 个表情吗？"
+        move_modal_title: 移动选中表情
+        move_submit_button: 移动
+        cache_clear_warning: 操作已保存，但未能自动清理格式化缓存，新表情显示可能需要稍等。
+
+  forum:
+    composer:
+      emoji_tooltip: 插入表情
+      picker_loading: 正在加载表情…
+      picker_load_error: 无法加载表情选择器，请重试。
+      picker_load_retry: 重试
+
+    emoji-mart:
+      search_placeholder: 搜索
+      no_emojis_found_title: 哎呀！
+      no_emojis_found_message: 未找到表情
+      pick: 选择一个表情
+      add_custom: 添加自定义表情
+      category_search: 搜索结果
+      skin_tone_choose: 选择默认肤色
+      skin_tone_default: 默认
+      skin_tone_light: 浅色
+      skin_tone_medium_light: 中浅色
+      skin_tone_medium: 中等
+      skin_tone_medium_dark: 中深色
+      skin_tone_dark: 深色
+
+      categories:
+        frequent: => pianotell-flamoji.ref.emoji_categories.frequent
+        people: => pianotell-flamoji.ref.emoji_categories.people
+        nature: => pianotell-flamoji.ref.emoji_categories.nature
+        foods: => pianotell-flamoji.ref.emoji_categories.foods
+        activity: => pianotell-flamoji.ref.emoji_categories.activity
+        places: => pianotell-flamoji.ref.emoji_categories.places
+        objects: => pianotell-flamoji.ref.emoji_categories.objects
+        symbols: => pianotell-flamoji.ref.emoji_categories.symbols
+        flags: => pianotell-flamoji.ref.emoji_categories.flags
+        custom: => pianotell-flamoji.ref.emoji_categories.custom
+
+  ref:
+    emoji_categories:
+      frequent: 常用
+      people: 笑脸与人物
+      nature: 动物与自然
+      foods: 食物与饮品
+      activity: 活动
+      places: 旅行与地点
+      objects: 物品
+      symbols: 符号
+      flags: 旗帜
+      custom: 自定义

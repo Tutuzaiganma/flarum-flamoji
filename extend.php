@@ -37,8 +37,16 @@ return [
         ->get('/pianotell/emojis', 'emojis.list', Controllers\ListEmojisController::class)
         ->post('/pianotell/emojis', 'emojis.create', Controllers\CreateEmojiController::class)
         ->post('/pianotell/import-emojis', 'emojis.import', Controllers\ImportEmojiController::class)
+        ->post('/pianotell/emojis/bulk-delete', 'emojis.bulk-delete', Controllers\BulkDeleteEmojiController::class)
+        ->post('/pianotell/emojis/bulk-move', 'emojis.bulk-move', Controllers\BulkMoveEmojiController::class)
+        ->post('/pianotell/emojis/reorder', 'emojis.reorder', Controllers\ReorderEmojisController::class)
         ->patch('/pianotell/emojis/{id}', 'emojis.update', Controllers\UpdateEmojiController::class)
-        ->delete('/pianotell/emojis/{id}', 'emojis.delete', Controllers\DeleteEmojiController::class),
+        ->delete('/pianotell/emojis/{id}', 'emojis.delete', Controllers\DeleteEmojiController::class)
+        ->get('/pianotell/emoji-types', 'emoji-types.list', Controllers\ListEmojiTypesController::class)
+        ->post('/pianotell/emoji-types', 'emoji-types.create', Controllers\CreateEmojiTypeController::class)
+        ->post('/pianotell/emoji-types/reorder', 'emoji-types.reorder', Controllers\ReorderEmojiTypesController::class)
+        ->patch('/pianotell/emoji-types/{id}', 'emoji-types.update', Controllers\UpdateEmojiTypeController::class)
+        ->delete('/pianotell/emoji-types/{id}', 'emoji-types.delete', Controllers\DeleteEmojiTypeController::class),
 
     (new Extend\Settings())
         ->default('pianotell-flamoji.auto_hide', true)

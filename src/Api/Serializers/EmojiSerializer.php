@@ -25,6 +25,8 @@ class EmojiSerializer extends AbstractSerializer
     protected function getDefaultAttributes($model)
     {
         return [
+            'type_id'          => $model->type_id,
+            'sort'             => $model->sort,
             'title'            => $model->title,
             'text_to_replace'  => $model->text_to_replace,
             'path'             => $model->path

@@ -1,3 +1,7 @@
+### 2.1.1 — 2026-05-20
+
+- CI now explicitly tests PHP `8.1`, `8.2`, and `8.3` to ensure ongoing compatibility with PHP 8.1 environments.
+
 ### 2.1.0 — 2026-05-03
 
 - **New admin setting: "Pre-populate with popular emojis"** — controls whether the Frequently Used tab starts with emoji-mart's built-in popular defaults or begins empty. Default ON preserves existing behavior. When OFF, the tab appears only after the user picks their first emoji; picks persist in localStorage.

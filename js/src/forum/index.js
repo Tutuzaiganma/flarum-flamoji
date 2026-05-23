@@ -372,7 +372,7 @@ app.initializers.add(
      * it to flamojiContainer, and show it. Called only on the first picker
      * open per editor instance; subsequent opens just toggle visibility.
      */
-    function buildPicker(emojiMartModule, dataModule, response) {
+    function buildPicker(emojiMartModule, dataModule, emojisResponse, typesResponse) {
       const baseUrl = app.forum.attribute('baseUrl');
       const { Picker } = emojiMartModule;
       const data = dataModule.default || dataModule;
@@ -387,12 +387,29 @@ app.initializers.add(
       // text without round-tripping through paths or URLs.
       const customEmojiReplacers = {};
       const customEmojis = [];
-      const customEntries = [];
+      const customCategories = (typesResponse.data || [])
+        .map((category) => ({
+          id: String(category.id || ''),
+          title: category.attributes?.title || '',
+          path: category.attributes?.path || '',
+          sort: Number(category.attributes?.sort) || 0,
+          isHidden: !!category.attributes?.isHidden,
+        }))
+        .filter((category) => category.id && !category.isHidden)
+        .sort((a, b) => (a.sort === b.sort ? a.id.localeCompare(b.id, undefined, { numeric: true }) : a.sort - b.sort));
+      const entriesByType = new Map(customCategories.map((category) => [category.id, []]));
 
-      response['data'].forEach((customEmoji) => {
-        const path = customEmoji['attributes']['path'];
-        const title = customEmoji['attributes']['title'];
-        const replacer = customEmoji['attributes']['text_to_replace'];
+      (emojisResponse.data || []).forEach((customEmoji) => {
+        const typeId = String(customEmoji.attributes?.type_id || '');
+
+        if (!entriesByType.has(typeId)) {
+          return;
+        }
+
+        const path = customEmoji.attributes?.path || '';
+        const title = customEmoji.attributes?.title || '';
+        const replacer = customEmoji.attributes?.text_to_replace || '';
+        const sort = Number(customEmoji.attributes?.sort) || 0;
         // Use the path as a stable id; paths are unique in the custom-emoji table.
         const id = 'flamoji-' + path;
 
@@ -410,29 +427,44 @@ app.initializers.add(
         });
 
         customEmojiReplacers[id] = replacer;
-        customEntries.push({
+        entriesByType.get(typeId).push({
           id,
           name: title,
+          sort,
           keywords: Array.from(keywords),
           skins: [{ src: urlChecker(path) ? path : baseUrl + path }],
         });
       });
 
-      if (customEntries.length) {
+      customCategories.forEach((category) => {
+        const categoryId = 'flamoji_custom_' + category.id;
+        const emojis = entriesByType.get(category.id).sort((a, b) =>
+          a.sort === b.sort ? a.id.localeCompare(b.id, undefined, { numeric: true }) : a.sort - b.sort
+        );
+        const icon = category.path
+          ? {
+              src: urlChecker(category.path) ? category.path : baseUrl + category.path,
+            }
+          : {};
+
+        if (!emojis.length) {
+          return;
+        }
+
         customEmojis.push({
-          id: 'flamoji_custom',
-          name: app.translator.trans('pianotell-flamoji.forum.emoji-mart.categories.custom'),
-          emojis: customEntries,
+          id: categoryId,
+          name: category.title,
+          icon,
+          emojis,
         });
 
         // emoji-mart's `categories` prop is an explicit allow-list. If we
-        // pass `custom` items but don't include their category id here,
-        // the picker silently hides the entire Custom tab. Append the
-        // custom group's id to the allow-list so it shows up at the end.
-        if (specifiedCategories.indexOf('flamoji_custom') === -1) {
-          specifiedCategories.push('flamoji_custom');
+        // pass `custom` items but don't include their category ids here,
+        // the picker silently hides those tabs.
+        if (specifiedCategories.indexOf(categoryId) === -1) {
+          specifiedCategories.push(categoryId);
         }
-      }
+      });
 
       const autoHide = !!app.forum.attribute('flamoji.auto_hide');
       const showRecents = !!app.forum.attribute('flamoji.show_recents');
@@ -610,10 +642,15 @@ app.initializers.add(
         app.request({
           method: 'GET',
           url: app.forum.attribute('apiUrl') + '/pianotell/emojis',
-          params: { filter: { all: 1 } },
+          params: { filter: { all: 1, visible: 1 } },
+        }),
+        app.request({
+          method: 'GET',
+          url: app.forum.attribute('apiUrl') + '/pianotell/emoji-types',
+          params: { filter: { visible: 1 } },
         }),
       ])
-        .then(([emojiMartModule, dataModule, response]) => {
+        .then(([emojiMartModule, dataModule, emojisResponse, typesResponse]) => {
           // Guard against the editor being torn down (composer closed,
           // navigated away) while chunks were downloading. Without this
           // we'd append a picker to document.body that nothing references
@@ -626,10 +663,13 @@ app.initializers.add(
           // Defensive: a corrupt or proxied API response could leave us
           // without the expected JSON:API shape. Coerce to an empty list
           // rather than crashing inside the forEach loop.
-          const safeResponse = response && Array.isArray(response.data)
-            ? response
+          const safeEmojisResponse = emojisResponse && Array.isArray(emojisResponse.data)
+            ? emojisResponse
             : { data: [] };
-          buildPicker.call(this, emojiMartModule, dataModule, safeResponse);
+          const safeTypesResponse = typesResponse && Array.isArray(typesResponse.data)
+            ? typesResponse
+            : { data: [] };
+          buildPicker.call(this, emojiMartModule, dataModule, safeEmojisResponse, safeTypesResponse);
         })
         .catch((err) => {
           console.error('[pianotell-flamoji] failed to load picker:', err);

@@ -223,6 +223,7 @@ app.initializers.add('pianotell-flamoji', (app) => {
 import CustomEmojiList_ from './components/CustomEmojiList';
 import CustomEmojiSection_ from './components/CustomEmojiSection';
 import EditEmojiModal_ from './components/EditEmojiModal';
+import EditEmojiTypeModal_ from './components/EditEmojiTypeModal';
 import CustomEmojiListState_ from './states/CustomEmojiListState';
 import Emoji_ from '../common/models/Emoji';
 
@@ -231,6 +232,7 @@ export default Object.freeze({
     CustomEmojiList: CustomEmojiList_,
     CustomEmojiSection: CustomEmojiSection_,
     EditEmojiModal: EditEmojiModal_,
+    EditEmojiTypeModal: EditEmojiTypeModal_,
   },
   states: {
     CustomEmojiListState: CustomEmojiListState_,

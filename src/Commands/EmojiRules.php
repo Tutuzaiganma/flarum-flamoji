@@ -33,7 +33,7 @@ class EmojiRules
      * @param  array<string, mixed>  $attributes
      * @param  string  $errorKeyPrefix  optional, used by bulk import to
      *                                  point the error at the failing row
-     * @return array{title: string, text_to_replace: string, path: string}
+     * @return array{title: string, text_to_replace: string, path: string, type_id: int|null, sort: int|null}
      *
      * @throws ValidationException
      */
@@ -42,6 +42,7 @@ class EmojiRules
         $title = trim((string) ($attributes['title'] ?? ''));
         $textToReplace = trim((string) ($attributes['text_to_replace'] ?? $attributes['textToReplace'] ?? ''));
         $path = trim((string) ($attributes['path'] ?? ''));
+        $typeId = $attributes['type_id'] ?? $attributes['typeId'] ?? null;
 
         $errors = [];
         if (($err = self::validateTextToReplace($textToReplace, true)) !== null) {
@@ -58,6 +59,8 @@ class EmojiRules
             'title' => $title,
             'text_to_replace' => $textToReplace,
             'path' => $path,
+            'type_id' => self::normalizeTypeId($typeId),
+            'sort' => self::normalizeSort($attributes['sort'] ?? null),
         ];
     }
 
@@ -83,6 +86,47 @@ class EmojiRules
         }
         // Empty string in update context means "not changing" — caller
         // should branch on array_key_exists before invoking us.
+        return null;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    public static function normalizeTypeId($value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_int($value)) {
+            return $value > 0 ? $value : null;
+        }
+
+        if (is_string($value) && ctype_digit($value)) {
+            $normalized = (int) $value;
+            return $normalized > 0 ? $normalized : null;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param mixed $value
+     */
+    public static function normalizeSort($value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        if (is_int($value)) {
+            return max(0, $value);
+        }
+
+        if (is_string($value) && ctype_digit($value)) {
+            return max(0, (int) $value);
+        }
+
         return null;
     }
 }
