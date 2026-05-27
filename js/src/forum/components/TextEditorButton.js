@@ -33,7 +33,7 @@ export default class TextEditorButton extends Button {
   static initAttrs(attrs) {
     super.initAttrs(attrs);
 
-    attrs.className = 'Button Button--icon Button--link Button-flamoji';
+    attrs.className = 'Button Button--icon Button-flamoji';
     attrs.tooltipText = attrs.title;
   }
 }

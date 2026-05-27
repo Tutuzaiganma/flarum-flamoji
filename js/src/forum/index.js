@@ -696,16 +696,22 @@ app.initializers.add(
       loadAndBuild();
     }
 
-    extend(TextEditor.prototype, 'toolbarItems', function (items) {
+    extend(TextEditor.prototype, 'controlItems', function (items) {
+      const previewPriority = items.has('preview') ? items.getPriority('preview') : 0;
+
       items.add(
         'flamoji',
         TextEditorButton.component({
           onclick: onPickerButtonClick.bind(this),
           icon: this.isPickerLoading ? 'fas fa-spinner fa-pulse' : 'far fa-smile-wink',
           title: app.translator.trans(t + 'composer.emoji_tooltip'),
-        })
+        }),
+        // Place flamoji immediately to the right of preview.
+        previewPriority - 0.1
       );
+    });
 
+    extend(TextEditor.prototype, 'toolbarItems', function (items) {
       // Drop the stock flarum/emoji toolbar button if present; we replace it.
       if (items.has('emoji')) items.remove('emoji');
     });

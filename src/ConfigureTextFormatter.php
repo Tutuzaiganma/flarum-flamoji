@@ -42,13 +42,22 @@ class ConfigureTextFormatter
                 $path = $this->url->to('forum')->base() . $path;
             }
 
-            $config->Emoticons->add(
-                $emoji->text_to_replace,
-                '
+            $template = '
                     <span class="flamoji">
                         <img src="' . htmlspecialchars($path, ENT_QUOTES | ENT_HTML5, 'UTF-8') . '" alt="' . htmlspecialchars((string) $emoji->title, ENT_QUOTES | ENT_HTML5, 'UTF-8') . '" />
                     </span>
-                '
+                ';
+
+            $config->Emoticons->add($emoji->text_to_replace, $template);
+
+            // The Emoticons plugin's PHP regexp is not always compiled in
+            // Unicode mode, which can miss some Chinese bracket shortcodes
+            // when posts are saved. Add an exact /u matcher that creates the
+            // same <E> tag while keeping Emoticons as the renderer mapping for
+            // old posts that already contain <E>[shortcode]</E>.
+            $config->Preg->match(
+                '/' . preg_quote($emoji->text_to_replace, '/') . '/u',
+                'E'
             );
         }
     }
